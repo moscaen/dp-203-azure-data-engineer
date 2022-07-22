@@ -38,7 +38,7 @@ graph LR;
 >>
 >> - Running Data Flows in **Azure**
 >> - Running Copy Activity between **cloud data stores**
->> - Dispatching the following transform activities in **public network**:
+>> - Dispatching the following transform activities in **public network**: MapReduce activity, HDInsight, Spark activity
 > It provides several ways of moving data such as:
 >
 > |IR type |Public network | Private network|
