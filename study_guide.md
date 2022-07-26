@@ -1,7 +1,29 @@
 # Skills Measured
 >
 > - [study material](<https://docs.microsoft.com/en-us/certifications/azure-data-engineer>)
->
+
+- [Skills Measured](#skills-measured)
+  - [Design and Implement Data Storage (40-45%)](#design-and-implement-data-storage-40-45)
+    - [Design a data storage structure](#design-a-data-storage-structure)
+    - [Design a partition strategy](#design-a-partition-strategy)
+    - [Design the serving layer](#design-the-serving-layer)
+    - [Implement physical data storage structures](#implement-physical-data-storage-structures)
+    - [Implement logical data structures](#implement-logical-data-structures)
+    - [Implement the serving layer](#implement-the-serving-layer)
+  - [Design and Develop Data Processing (25-30%)](#design-and-develop-data-processing-25-30)
+    - [Ingest and transform data](#ingest-and-transform-data)
+    - [Design and develop a batch processing solution](#design-and-develop-a-batch-processing-solution)
+    - [Synapse Pipelines, PolyBase, and Azure Databricks](#synapse-pipelines-polybase-and-azure-databricks)
+    - [Design and develop a stream processing solution](#design-and-develop-a-stream-processing-solution)
+    - [Azure Event Hubs](#azure-event-hubs)
+    - [Manage batches and pipelines](#manage-batches-and-pipelines)
+  - [Design and Implement Data Security (10-15%)](#design-and-implement-data-security-10-15)
+    - [Design security for data policies and standards](#design-security-for-data-policies-and-standards)
+    - [Implement data security](#implement-data-security)
+  - [Monitor and Optimize Data Storage and Data Processing (10-15%)](#monitor-and-optimize-data-storage-and-data-processing-10-15)
+    - [Monitor data storage and data processing](#monitor-data-storage-and-data-processing)
+    - [Optimize and troubleshoot data storage and data processing](#optimize-and-troubleshoot-data-storage-and-data-processing)
+
 ## Design and Implement Data Storage (40-45%)
 
 ### Design a data storage structure
@@ -193,3 +215,10 @@
 > - optimize pipeline for descriptive versus analytical workloads
 > - troubleshoot a failed spark job
 > - troubleshoot a failed pipeline run
+
+I passed the DP-203 exam last friday. If you studied for this exam by going through the esi practice exam you can expect about 10 similar questions to these (out of 40). The main questions I struggled with were about Databricks infrastructure. Most of the questions were about synapse analytics. Code examples were pretty straightforward.
+If you want some easy points make sure you understand:
+Time windowing functions
+slowly changing dimensions
+2/3/4 normal form
+Encryption of data (DDM,TDE and stuff)
