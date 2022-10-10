@@ -216,7 +216,9 @@
 > - troubleshoot a failed spark job
 > - troubleshoot a failed pipeline run
 
-I passed the DP-203 exam last friday. If you studied for this exam by going through the esi practice exam you can expect about 10 similar questions to these (out of 40). The main questions I struggled with were about Databricks infrastructure. Most of the questions were about synapse analytics. Code examples were pretty straightforward.
+I passed the DP-203 exam last friday. If you studied for this exam by going through the esi practice exam you can expect about 10 similar questions to these (out of 40).
+The main questions I struggled with were about Databricks infrastructure.
+Most of the questions were about Synapse Analytics. Code examples were pretty straightforward.
 If you want some easy points make sure you understand:
 Time windowing functions
 slowly changing dimensions

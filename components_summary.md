@@ -23,6 +23,9 @@
     - [Analyze and optimize data warehouse storage in Azure Synapse Analytics](#analyze-and-optimize-data-warehouse-storage-in-azure-synapse-analytics)
     - [Secure a data warehouse in Azure Synapse Analytics](#secure-a-data-warehouse-in-azure-synapse-analytics)
       - [Authentication in Azure Synapse Analytics](#authentication-in-azure-synapse-analytics)
+      - [Manage authorization through column and row level security](#manage-authorization-through-column-and-row-level-security)
+      - [Manage sensitive data with Dynamic Data Masking](#manage-sensitive-data-with-dynamic-data-masking)
+      - [Implement encryption in Azure Synapse Analyti>](#implement-encryption-in-azure-synapse-analyti)
 
 ## Azure Data Factory
 >
@@ -440,7 +443,7 @@ In an MPP system, the data in a table is distributed for processing across a poo
 
 ### Secure a data warehouse in Azure Synapse Analytics
 
->There are a range of network security steps that you should consider to secure Azure Synapse Analytics. One of the first aspects that you will consider is securing access to the service itself. This can be achieved by creating the following network objects including:
+> There are a range of network security steps that you should consider to secure Azure Synapse Analytics. One of the first aspects that you will consider is securing access to the service itself. This can be achieved by creating the following network objects including:
 >
 >- Firewall rules:
 >>
@@ -456,7 +459,7 @@ In an MPP system, the data in a table is distributed for processing across a poo
 >> - it ensures that your workspace is network isolated from other workspaces.
 >> - Dedicated SQL pool and serverless SQL pool are multi-tenant capabilities and therefore reside outside of the Managed workspace Virtual Network. Intra-workspace communication to dedicated SQL pool and serverless SQL pool use Azure private links. These private links are automatically created for you when you create a workspace with a Managed workspace Virtual Network associated to it.
 >>
->- Private endpoints:
+> - Private endpoints:
 >>
 >> - Azure Synapse Analytics enables you to connect up its various components through endpoints. You can set up managed private endpoints to access these components in a secure manner known as private links. This can only be achieved in an Azure Synapse workspace with a Managed workspace Virtual Network.
 > >
@@ -467,5 +470,89 @@ In an MPP system, the data in a table is distributed for processing across a poo
 > [link](https://docs.microsoft.com/en-us/learn/modules/secure-data-warehouse-azure-synapse-analytics/4-configure-authentication)
 > Azure Synapse Analytics dedicated SQL pools supports Conditional Access to provide protection for your data. It does require that Azure Synapse Analytics is configured to support Azure Active Directory, and that if you chose multifactor authentication, that the tool you are using support it.\
 >
+> Azure Active Directory is a directory service that allows you to centrally maintain objects that can be secured. An employee of an organization will typically have a user account that represents them in the organizations Azure Active Directory tenant, and they then use the user account with a password to authenticate against other resources that are stored within the directory using a process known as single sign-on.
 > If a user and an instance of Azure Synapse Analytics are part of the same Azure Active Directory, it is possible for the user to access Azure Synapse Analytics without an apparent login \
 > A system-assigned managed identity is created for your Azure Synapse workspace when you create the workspace.
+>
+> using SQL Authentication will be an alternative for user accounts that are not part of an Azure Active directory.  user is created in the instance of a dedicated SQL pool.\
+> This approach is typically useful for external users who need to access the data, or if you are using third party or legacy applications against the Azure Synapse Analytics dedicated SQL pool
+>
+> Synapse SQL support connections from SQL Server Management Studio (SSMS) using Active Directory Universal Authentication.
+>
+> If you are unable to use a managed identity to access resources such as Azure Data Lake then you can use storage account keys and shared access signatures.\
+> For untrusted clients, use a shared access signature (SAS). A shared access signature is a string that contains a security token that can be attached to a URI. Use a shared access signature to delegate access to storage objects and specify constraints, such as the permissions and the time range of access
+
+#### Manage authorization through column and row level security
+>
+> - Column level security: it allows you to restrict column access in order to protect sensitive data
+>     ![column-level-security](https://docs.microsoft.com/en-us/learn/wwl-data-ai/secure-data-warehouse-azure-synapse-analytics/media/column-level-security.png)
+>     The  logic is located in the database tier, rather than on the application level data tier
+>     Column-level security is needed when you want to restrict access to certain information (i.e. a customer social security number) for certain roles
+>
+ ```Sql
+GRANT SELECT ON
+```
+>
+> - Row level security:  can help you to create a group membership or execution context in order to control the rows of a database
+>     The restriction on the access of the rows is a logic that is located in the database tier, rather than on the application level data tier
+>     ![row-level-security](https://docs.microsoft.com/en-us/learn/wwl-data-ai/secure-data-warehouse-azure-synapse-analytics/media/row-level-security-graphic.png)
+>    RLS within Azure Synapse supports one type of security predicates, which are Filter predicates, not block predicates.
+>     This table-valued function will then be invoked and enforced by the security policy that you need. An application is not aware of rows that are filtered from the result set for filter predicates.\
+>     So what will happen is that if all rows are filtered, a null set is returned.
+>     The filter predicate affects all get operations such as SELECT, DELETE, UPDATE
+>
+> If you want to create, alter or drop the security policies, you would have to use the ALTER ANY SECURITY POLICY permission.
+
+#### Manage sensitive data with Dynamic Data Masking
+
+> Dynamic Data Masking is a policy-based security feature. It will hide the sensitive data in a result set of a query that runs over designated database fields.\
+> Azure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics support Dynamic Data Masking
+> For Azure Synapse Analytics, the way to set up a Dynamic Data Masking policy is using **PowerShell or the REST API**.\
+> The configuration of the Dynamic Data Masking policy can be done by the **Azure SQL Database admin**, **server admin**, or **SQL Security Manager roles**
+>
+> - SQL users excluded from Dynamic Data Masking Policies:\
+>     The following SQL users or Azure AD identities can get unmasked data in the SQL query results. Users with administrator privileges are always excluded from masking, and will see the original data without any mask.
+> - Masking rules:\
+> Masking rules are a set of rules that define the designated fields to be masked including the masking function that is used. The designated fields can be defined using a database schema name, table name, and column name.
+> - Masking functions:\
+>  Masking functions are a set of methods that control the exposure of data for different scenarios.
+> - Get-AzSqlDatabaseDataMaskingPolicy cmdlet does, is getting the data masking policy of an Azure SQL database.
+>
+> - What the Set-AzSqlDatabaseDataMaskingPolicy cmdlet does is setting the data masking policy for an Azure SQL database.
+> - What the Get-AzSqlDatabaseDataMaskingRule cmdlet does it getting either a specific data masking rule or all of the data masking rules for an Azure SQL database.
+> - What the New-AzSqlDatabaseDataMaskingRule cmdlet does is creating a data masking rule for an Azure SQL database.
+> - What the Remove-AzSqlDatabaseDataMaskingRule cmdlet does, is it removes a specific data masking rule from an Azure SQL database.
+> - What the Set-AzSqlDatabaseDataMaskingRule cmdlet does is setting a data masking rule for an Azure SQL database.
+>
+
+#### Implement encryption in Azure Synapse Analyti>
+
+> Transparent data encryption (TDE) is an encryption mechanism that encrypts data at rest\
+> TDE performs real-time encryption as well as decryption of the database, associated backups, and transaction log files at rest without you having to make changes to the application.\
+> In order to use TDE for Azure Synapse Analytics, you will have to manually enable it.
+>
+> - TDE encrypts the entire database storage using a symmetric key called a Database Encryption Key (DEK).\
+>     the DEK is protected by a built-in certificate unique for each server with encryption algorithm AES256.
+> - This protector can be either a service-managed certificated, which is referred to as service-managed transparent data encryption, or an asymmetric key that is stored in Azure Key Vault (customer-managed transparent data encryption).
+> - TDE protector is set on the server level. There it is inherited by all the databases that are attached or aligned to that server
+> - When a database is in a geo-replicated relationship then primary and the geo-secondary database are protected by the primary database's parent server key
+>
+> the DEK that is protected by the Transparent Data Encryption Protector can also be customer managed by bringing an asymmetric key that is stored in Azure Key Vault (customer-managed transparent data encryption). (Bring Your Own Key (BYOK))
+> Another option is to transfer the TDE Protector to the key vault from, for example, an on-premise hardware security module (HSM) device. Azure Synapse Analytics needs to be granted permissions to the customer-owned key vault in order to decrypt and encrypt the DEK. If permissions of the server to the key vault are revoked, a database will be inaccessible, and all data is encrypted.
+>
+> If you export a TDE-protected database, the exported content is not encrypted. This will be stored in an unencrypted BACPAC file. You need to make sure that you protect this BACPAC file and enable TDE as soon as the import of the bacpac file in the new database is finished.
+>
+> When you want to access files from the Azure Data Lake Storage Gen 2 within your Azure Synapse Analytics Workspace, it uses AAD passthrough for the authentication.
+> to connect to other linked services, you are enabled to make a direct call to the TokenLibrary.
+
+```python
+# Python
+# retrieve connectionstring from TokenLibrary
+
+from pyspark.sql import SparkSession
+
+sc = SparkSession.builder.getOrCreate()
+token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary
+connection_string = token_library.getConnectionString("<LINKED SERVICE NAME>")
+print(connection_string)
+```
